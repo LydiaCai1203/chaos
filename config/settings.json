@@ -1,0 +1,16 @@
+{
+    "potionx_env": "development",
+
+    "development": {
+        "neo4j_url": "neo4j+s://d5f66263.databases.neo4j.io",
+        "neo4j_username": "username",
+        "neo4j_password": ""
+    },
+  
+    "production": {
+        "neo4j_url": "neo4j+s://d5f66263.databases.neo4j.io",
+        "neo4j_username": "username",
+        "neo4j_password": ""
+    }   
+  }
+  
