@@ -2,6 +2,7 @@ import os
 import httpx
 import asyncio
 
+import ffmpeg
 from bilibili_api import video
 from bilibili_api import Credential, HEADERS
 
@@ -16,6 +17,17 @@ async def download_url(url: str, out: str):
                     break
                 process += len(chunk)
                 f.write(chunk)
+
+
+def convert_mp4_to_mp3(input_file: str, output_file: str):
+    input_stream = ffmpeg.input(input_file)
+    audio_stream = input_stream.audio
+    (
+        ffmpeg.output(audio_stream, output_file, format="mp3")
+        .overwrite_output()
+        .run(capture_stdout=True, capture_stderr=True)
+    )
+
 
 async def main():
     # 实例化 Credential 类
