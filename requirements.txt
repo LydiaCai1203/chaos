@@ -1,4 +1,5 @@
 bilibili-api-python==16.2.0
+langchain_experimental
 langchain_openai
 openai-whisper
 ffmpeg-python

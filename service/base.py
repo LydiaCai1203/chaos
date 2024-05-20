@@ -8,7 +8,7 @@ from langchain_community.graphs.graph_document import (
     Node as BaseNode,
     Relationship as BaseRelationship,
 )
-from db.neo4j import graph
+from db.neo4j import driver
 from schema.graph import KnowledgeGraph, Node, Relationship
 
 
@@ -107,12 +107,3 @@ def extract_and_store_graph(
     format_instructions = output_parser.get_format_instructions()
     chain = prompt | llm | output_parser
     kg = chain.invoke({"input": document.page_content, "format": format_instructions})
-    
-    # TODO: kg 加入知识图谱
-    # graph_document = GraphDocument(
-    #   nodes = [map_to_base_node(node) for node in data.nodes],
-    #   relationships = [map_to_base_relationship(rel) for rel in data.rels],
-    #   source = document
-    # )
-    # print(graph_document)
-    # graph.add_graph_documents([graph_document])

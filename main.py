@@ -1,8 +1,14 @@
+"""
+https://python.langchain.com/v0.1/docs/use_cases/graph/constructing/
+"""
 from tqdm import tqdm
+from langchain_experimental.graph_transformers import LLMGraphTransformer
 from langchain.text_splitter import TokenTextSplitter
-from service.base import extract_and_store_graph
+from langchain_core.documents import Document
+from langchain_openai import ChatOpenAI
 
-from db.neo4j import graph
+from service.base import extract_and_store_graph
+from db.neo4j import driver
 
 
 raw = (
@@ -24,27 +30,27 @@ raw = (
 text_splitter = TokenTextSplitter(chunk_size=2048, chunk_overlap=24)
 documents = text_splitter.create_documents([raw])
 
+llm = ChatOpenAI(
+    streaming=True,
+    verbose=True,
+    callbacks=[],
+    model_name="moonshot-v1-8k",
+    openai_api_base="https://api.moonshot.cn/v1",
+    openai_api_key="sk-z8KWnfxLSLiHmrX0XvG34qnQaH2Wm617dUBzqfAOABozb1HJ",
+    openai_proxy="",
+    temperature=0.7,
+    max_tokens=1000,
+)
+llm_transformer_filtered = LLMGraphTransformer(
+    llm=llm,
+    allowed_nodes=["人", "国家", "地点"],
+    allowed_relationships=[],
+)
+graph_documents_filtered = llm_transformer_filtered.convert_to_graph_documents(documents)
 
-allowed_nodes = [
-    "Person",
-    "Location",
-    "Event",
-]
+print(f"Nodes:{graph_documents_filtered[0].nodes}")
+print(f"Relationships:{graph_documents_filtered[0].relationships}")
 
-for i, d in tqdm(enumerate(documents), total=len(documents)):
-    extract_and_store_graph(d, allowed_nodes)
-
-# llm = ChatOpenAI(
-#     streaming=True,
-#     verbose=True,
-#     callbacks=[],
-#     model_name="moonshot-v1-8k",
-#     openai_api_base="https://api.moonshot.cn/v1",
-#     openai_api_key="sk-z8KWnfxLSLiHmrX0XvG34qnQaH2Wm617dUBzqfAOABozb1HJ",
-#     openai_proxy="",
-#     temperature=0.7,
-#     max_tokens=1000,
-# )
 
 # graph.refresh_schema()
 # cypher_chain = GraphCypherQAChain.from_llm(
@@ -56,4 +62,3 @@ for i, d in tqdm(enumerate(documents), total=len(documents)):
 # )
 
 # cypher_chain.invoke({"query": "于连的结局是什么?"})
-

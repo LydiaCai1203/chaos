@@ -1,11 +1,12 @@
-from langchain.graphs import Neo4jGraph
+from neo4j import GraphDatabase
 
 from config import config
 
-graph = None
 
-# graph = Neo4jGraph(
-#     url=config.neo4j_url,
-#     username=config.neo4j_username,
-#     password=config.neo4j_password
-# )
+driver = GraphDatabase.driver(
+    config.neo4j_url, 
+    auth=(
+        config.neo4j_username, 
+        config.neo4j_password
+    )
+)
